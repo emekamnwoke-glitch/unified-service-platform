@@ -397,10 +397,10 @@ For questions about specific architectural decisions, rationale, or implementati
 
 - **SDD_Anonymized_Portfolio.md** – Solutions Design Document (26 pages)
 - **EA_Contribution_Report.md** – Architectural Contribution Summary (detailed analysis)
-- **README.md** – This guide
+- **README.md** – This guide you're reading.
 
 **Total Portfolio:** ~12,000 words of architecture documentation and analysis.
 
 ---
 
-**Enjoy exploring the architecture! 🏗️**
+**Enjoy exploring my architecture design!**
