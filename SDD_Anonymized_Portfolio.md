@@ -629,8 +629,8 @@ Named honestly, in keeping with Section 6.4:
 | Vendor per-seat cost | $89/agent/month | Illustrative rate within the published mid-tier pricing band of well-known international service-desk platforms |
 | Vendor contract currency | USD | Matches the FX-exposure pain point behind the Cost Optimization business driver (Section 2A) |
 | Internal engineering cost | $70,000/FTE/year, fully loaded | Illustrative blended rate |
-| MVP build team | 10 FTEs (skillset per ADR-002: .NET, Node.js, PostgreSQL, Kafka, Kubernetes), 9 months | Matches WP1–WP2 (Section 7.2) |
-| Steady-state platform team | 3 FTEs, post-rollout | Illustrative — smaller ongoing footprint than the build phase |
+| Full build-out team | 10 FTEs (skillset per ADR-002: .NET, Node.js, PostgreSQL, Kafka, Kubernetes), 6 months | Matches WP1–WP3 (Section 7.2) — the full 8-service build-out, not just the 2-service MVP |
+| Steady-state platform team | 3 FTEs, from month 7 of Year 1 onward | Takes over once WP3 completes; covers WP4 (vendor decommission, DR drill) and all of Years 2–3 |
 | Incremental infrastructure | $40,000/year | Illustrative compute/storage/support share of the already-owned private cloud (ADR-003) |
 | FX scenarios | Stable (0%/yr), Moderate (15%/yr), Severe (30%/yr) local-currency depreciation against the vendor's invoicing currency | Illustrative bands reflecting the volatility named as a risk in Section 2A — not a specific historical or forecast rate |
 
@@ -648,27 +648,31 @@ The vendor license is invoiced in USD; the organization's real cost is a local-c
 
 Entirely local-currency-denominated — no FX exposure, by design, since ADR-002 chose an open-source, no-per-seat stack.
 
+Year 1 splits into two halves: the 10-FTE build team runs for the first 6 months (WP1–WP3, standing up all 8 services), then hands off to the 3-FTE steady-state team for the remaining 6 months (WP4's vendor decommission and DR drill, plus early steady-state operation).
+
 | Year | Build/Run Cost | Infrastructure | Total |
 |---|---|---|---|
-| Year 1 (WP1–WP2, build) | $525,000 (10 FTEs × 9 months) | $40,000 | $565,000 |
-| Year 2 (WP3–WP4, rollout + steady state) | $210,000 (3 FTEs) | $40,000 | $250,000 |
+| Year 1, months 1–6 (WP1–WP3, build) | $350,000 (10 FTEs × 6 months) | — | — |
+| Year 1, months 7–12 (WP4 + early steady state) | $105,000 (3 FTEs × 6 months) | — | — |
+| **Year 1 Total** | **$455,000** | $40,000 | **$495,000** |
+| Year 2 (steady state) | $210,000 (3 FTEs) | $40,000 | $250,000 |
 | Year 3 (steady state) | $210,000 (3 FTEs) | $40,000 | $250,000 |
-| **3-Year Total** | | | **$1,065,000** |
+| **3-Year Total** | | | **$995,000** |
 
 ### 8.4 Comparison and Breakeven
 
 | Metric | Stable FX | Moderate FX | Severe FX |
 |---|---|---|---|
 | 3-Year Vendor Cost | $1,602,000 | $1,853,000 | $2,131,000 |
-| 3-Year Internal Cost | $1,065,000 | $1,065,000 | $1,065,000 |
-| **Savings** | $537,000 | $788,000 | $1,066,000 |
-| **Reduction** | 33.5% | 42.5% | 50.0% |
+| 3-Year Internal Cost | $995,000 | $995,000 | $995,000 |
+| **Savings** | $607,000 | $858,000 | $1,136,000 |
+| **Reduction** | 37.9% | 46.3% | 53.3% |
 
-**Payback:** the build year costs more than staying on the vendor platform would have — cumulative internal spend at Year 1 ($565,000) exceeds Year 1 vendor spend ($534,000). By the end of Year 2, cumulative internal spend ($815,000) falls below cumulative vendor spend under every FX scenario (Stable: $1,068,000; Moderate: $1,148,000; Severe: $1,228,000). **Payback lands within Year 2 even with no FX movement at all, and earlier under any depreciation scenario.**
+**Payback:** because the build team hands off to the smaller steady-state team partway through Year 1 rather than running full-strength all year, Year 1 internal spend ($495,000) is already below Year 1 vendor spend ($534,000) — **payback happens inside Year 1 itself, before Year 2 even starts, under every FX scenario.**
 
 ### 8.5 What This Means for the Reported Cost-Reduction Figure
 
-The "40–60% reduction" figure cited elsewhere in this portfolio is directionally right but doesn't match this model's own output: this model produces **33.5% to 50%**, depending on the FX scenario — the low end of "40–60%" isn't reached in a stable-FX year, and the high end isn't reached even under severe depreciation. Recommendation: cite the range and its FX dependency ("33–50%, wider under currency depreciation") rather than a flat 40–60% — a claim this model doesn't actually produce, illustrative or not.
+The "40–60% reduction" figure cited elsewhere in this portfolio is close but still doesn't match this model's own output: this model produces **37.9% to 53.3%**, depending on the FX scenario — the low end of "40–60%" is nearly reached in a stable-FX year but not quite, and the high end isn't reached even under severe depreciation. Recommendation: cite the range and its FX dependency ("38–53%, wider under currency depreciation") rather than a flat 40–60% — a claim this model doesn't actually produce, illustrative or not.
 
 ### 8.6 Real-World Reference Point (Freshdesk, April 2025)
 
@@ -700,7 +704,7 @@ $89 × 500 × 12 = **$534,000/year** — identical, coincidentally, to the illus
 | CBN, mid-month peak (₦1,637) | ₦874,158,000 |
 | Parallel market (₦1,555) | ₦830,370,000 |
 
-**Applying a 46% reduction — inside this model's own 33.5–50% range (Section 8.4) — to this real figure:**
+**Applying a 46% reduction — inside this model's own 37.9–53.3% range (Section 8.4) — to this real figure:**
 
 | Metric | USD | NGN (at ₦1,600 representative) |
 |---|---|---|

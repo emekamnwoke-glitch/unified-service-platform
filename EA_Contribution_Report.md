@@ -274,7 +274,7 @@ Documented:
 
 | Dimension | Before (Vendor Platform) | After (Proposed Architecture) | Value |
 |---|---|---|---|
-| **Operational Cost** | Vendor licensing subject to FX fluctuation | Internal capex model with predictable scaling | Cost certainty, 33-50% reduction depending on FX scenario (see SDD §8) |
+| **Operational Cost** | Vendor licensing subject to FX fluctuation | Internal capex model with predictable scaling | Cost certainty, 38-53% reduction depending on FX scenario (see SDD §8) |
 | **Scalability** | Limited to vendor's infrastructure | Unlimited horizontal scaling in private cloud | 10x capacity growth capability |
 | **Flexibility** | Vendor-constrained features | Fully configurable (workflows, fields, SLAs) | Customization without vendor dependencies |
 | **Data Control** | Vendor-hosted (cloud/NDPR risk) | Internal hosting with strict NDPR compliance | Data sovereignty, reduced audit risk |
@@ -385,7 +385,7 @@ As the Enterprise Architect on the Unified Service Management Platform, I led th
 
 **Key Success Metrics:**
 - ✓ Scalability: 10x growth capacity (vs. vendor ceiling)
-- ✓ Cost: 33-50% reduction over 3 years, wider under currency depreciation (modeled in SDD §8)
+- ✓ Cost: 38-53% reduction over 3 years, wider under currency depreciation (modeled in SDD §8)
 - ✓ Flexibility: Fully configurable, vendor-independent
 - ✓ Compliance: On-premise hosting, strict audit trails, GDPR-ready
 - ✓ Delivery: Production-ready SDD, clear implementation roadmap
