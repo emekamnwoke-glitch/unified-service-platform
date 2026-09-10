@@ -17,7 +17,8 @@
 6. Architecture Model Refinements
 7. Implementation Roadmap and MVP Scope
 8. Budget Impact Analysis (Illustrative Model)
-9. Appendix
+9. Technology Stack Risk Assessment
+10. Appendix
 
 ---
 
@@ -711,7 +712,50 @@ That remaining figure — $288,360/year — lands close to Section 8.3's modeled
 
 ---
 
-## 9. Appendix
+## 9. Technology Stack Risk Assessment
+
+Each ADR (`Architecture_Decision_Records.md`) carries its own risk table, scoped to that one decision. This section consolidates all of them into a single register, plus a handful of cross-cutting risks that don't belong to any single decision — vendor exit timing, governance sequencing, and the open items already named in Sections 6.4 and 7.3. Nothing here is new information; it's the same risks gathered into one place so a risk owner can scan the whole engagement without reading three ADRs and two other sections first.
+
+### 9.1 Architecture & Engineering Risks (from ADR-001, ADR-002)
+
+| ID | Risk | Likelihood | Impact | Mitigation | Owner | Source |
+|---|---|---|---|---|---|---|
+| R-01 | Data inconsistency between services during phased cutover (some tickets in the vendor system, some in the new platform) | Medium | High | Parallel run during WP2–WP3, not a hard cutover; daily reconciliation job checks for orphaned records | Engineering | ADR-001 |
+| R-02 | Distributed debugging slows incident response during cutover | Medium | Medium | Centralized logging and tracing (EFK) from day one, not added later | DevOps | ADR-001 |
+| R-03 | Team unfamiliar with service-discovery and inter-service failure modes | Medium | Medium | WP1 is deliberately infrastructure-only, giving the team a low-stakes environment before WP2's user-facing cutover | Tech Lead | ADR-001 |
+| R-04 | Increased operational complexity vs. the current single-vendor support model | High | Low | OpenShift-native monitoring/auto-healing absorbs most day-to-day burden; on-call rotation covers the rest | DevOps | ADR-001 |
+| R-05 | Team skill gap across ASP.NET, Node.js, Kafka, and Kubernetes simultaneously | Medium | Medium | Phased rollout gives the team Kafka/OpenShift exposure in WP1 before user-facing work in WP2 | Tech Lead | ADR-002 |
+| R-06 | Accidental Windows deployment reintroduces the licensing cost this stack was chosen to avoid | Low | High | CI/CD pipeline enforces Linux-container-only build targets | DevOps | ADR-002 |
+| R-07 | No vendor SLA on open-source components (Kafka, PostgreSQL, Redis) | Low | Medium | Mature community support for all three; platform team capacity budgeted for patching | Engineering | ADR-002 |
+| R-08 | Kafka partition sizing unvalidated against the 1000 req/sec throughput target | Medium | Medium | Load test planned before the performance-testing pass (still open — see Section 6.4) | Platform | ADR-002, §6.4 |
+
+### 9.2 Infrastructure & Deployment Risks (from ADR-003)
+
+| ID | Risk | Likelihood | Impact | Mitigation | Owner | Source |
+|---|---|---|---|---|---|---|
+| R-09 | No public-cloud elasticity to burst to if demand exceeds private-cloud capacity | Medium | High | Capacity sized to the 10x growth target (QD1) up front, audited quarterly | Infrastructure | ADR-003 |
+| R-10 | Single-region hosting — no geographic redundancy the way multi-region public cloud offers | Low | High | Multi-cluster hosting within the private environment for failover; residual single-site-outage risk mitigated by the DR drill (WP4) | DevOps | ADR-003 |
+| R-11 | DR drill reveals RTO/RPO targets aren't actually met | Medium | High | Drill scheduled before vendor decommission (WP4), so there's a fallback if targets miss on the first attempt | DevOps | ADR-003 |
+| R-12 | Hardware procurement lead time delays scaling beyond planned capacity | Medium | Medium | 6-month procurement buffer factored into the capacity plan | Infrastructure | ADR-003 |
+
+### 9.3 Cross-Cutting Programme Risks
+
+Not owned by a single decision — these sit across the whole engagement.
+
+| ID | Risk | Likelihood | Impact | Mitigation | Owner | Source |
+|---|---|---|---|---|---|---|
+| R-13 | API Gateway is a single logical tier with no documented failover behavior | Medium | High | Needs its own decision record before Phase D sign-off — currently unresolved | Platform | §6.4 (Open) |
+| R-14 | Vendor decommission (WP4) slips, so the organization pays both the vendor's FX-exposed license and the internal run cost simultaneously | Medium | High | WP4 exit criteria (30 consecutive days on the new platform) is a hard gate before contract termination is initiated, not a target date | Business Sponsor | ADR-001, §8.6 |
+| R-15 | No formal ARB sign-off exists yet for any of the three ADRs — Phase G (Implementation Governance) has not started | Medium | Medium | Convene the architecture review board before WP1 provisioning begins, not after | EA / ARB | EA_Contribution_Report.md, Phase G |
+| R-16 | Budget and staffing plans are aggregate, not itemized — no per-work-package cost breakdown, no hiring sequence by role/quarter | Medium | Medium | Close alongside each other, since both feed the same planning conversation (flagged open in §7.3) | EA / PM | §7.3 (Open) |
+
+### 9.4 What Needs Executive Attention
+
+Four risks carry High impact and aren't fully closed by an existing mitigation: **R-01** (data inconsistency during cutover), **R-09** (no cloud-burst capacity), **R-11** (DR drill might fail its own targets), and **R-14** (vendor decommission slippage double-billing the organization). None of these are reasons to stop — they're reasons WP2's pilot group, WP4's DR drill, and WP4's exit criteria exist as hard gates rather than target dates. If any one of the four is going to bite, it bites at exactly the point the roadmap (Section 7.2) already pauses to check.
+
+---
+
+## 10. Appendix
 
 ### Glossary
 - **API Gateway:** Entry point for all external and internal API requests to the microservices.

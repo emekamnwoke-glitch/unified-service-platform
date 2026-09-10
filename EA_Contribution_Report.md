@@ -336,7 +336,7 @@ Documented:
 5. **Deployment Architecture Diagram** – Infrastructure topology, redundancy, disaster recovery
 
 ### Secondary Artifacts
-- Technology stack risk assessment
+- **Technology stack risk assessment** — 16 risks (R-01 through R-16) consolidated from all three ADRs plus cross-cutting programme risks, with likelihood, impact, mitigation, and owner per risk: see SDD §9 ([`SDD_Anonymized_Portfolio.md`](SDD_Anonymized_Portfolio.md))
 - **Budget impact analysis** — illustrative 3-year TCO model comparing vendor licensing (3 FX scenarios) against internal build/run cost, with assumptions, breakeven point, and a reconciliation of the reported cost-reduction figure against the model's own output: see SDD §8 ([`SDD_Anonymized_Portfolio.md`](SDD_Anonymized_Portfolio.md))
 - Skill/staffing requirements
 - **Implementation roadmap (MVP scope definition)** — 5 work packages sequencing MVP and full rollout against dependency and target quarter, plus an explicit MVP exit criteria and scope cut: see SDD §7 ([`SDD_Anonymized_Portfolio.md`](SDD_Anonymized_Portfolio.md))
