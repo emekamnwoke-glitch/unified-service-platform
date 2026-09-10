@@ -76,7 +76,7 @@ The primary purpose of this solution is to provide a robust, scalable cloud-base
 | Service Desk End User (Requester) | End Customer/Employee | Access consistent and reliable services. | Transparent status of service requests. | Poor service quality or unclear updates. | Submits service requests and tracks status. | Better service experience and self-service options. |
 | Release Manager | Release Planning & Coordination Lead | Ensure smooth, coordinated service releases. | Integrated calendar and release progress tracking. | Missed dependencies or communication gaps. | Plans and manages releases via the portal. | Reduced release risks and better planning. |
 | Service Transition Manager | Operational Readiness Lead | Ensure handover of new services. | End-to-end visibility of transition milestones. | Incomplete knowledge transfer affecting support. | Oversees transitions and ensures operational readiness. | Smoother transitions and better stakeholder alignment. |
-| Service Manager | Operational Performance Overseer | Deliver greed service levels. | Real-time performance metrics and SLA tracking. | Inability to meet SLAs due to blind spots. | Monitors service health and escalates issues. | Proactive service management and SLA compliance. |
+| Service Manager | Operational Performance Overseer | Deliver agreed service levels. | Real-time performance metrics and SLA tracking. | Inability to meet SLAs due to blind spots. | Monitors service health and escalates issues. | Proactive service management and SLA compliance. |
 
 ---
 
@@ -431,7 +431,7 @@ Decompose the IT Service Management system into the following microservices:
 - **API Gateway Dependency:** The API Gateway remains the single-entry point for external and internal communications.
 
 **Rationale:**
-- **Aligns with Microservices Architecture:** Decomposition based on functional boundaries cligns with domain-driven microservices design.
+- **Aligns with Microservices Architecture:** Decomposition based on functional boundaries aligns with domain-driven microservices design.
 - **Promotes Scalability:** Services can scale independently based on demand (e.g., heavy ticket volumes at the Service Desk vs lower load on Post Implementation Reviews).
 - **Enhances Maintainability:** Smaller, targeted services enable faster troubleshooting and easier updates.
 - **Enables Independent Deployment:** Feature releases or patches can be deployed service-by-service without system-wide risks.

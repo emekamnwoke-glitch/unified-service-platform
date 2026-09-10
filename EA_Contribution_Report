@@ -1,5 +1,5 @@
 # Enterprise Architecture Contribution Report
-## Unified Service Management Platform – Internal CRM Tool
+## Unified Service Management Platform – IT Service Management (ITSM) Tool
 
 **Period:** April – May 2025  
 **Role:** Enterprise Architect  
@@ -454,7 +454,7 @@ As the Enterprise Architect on the Unified Service Management Platform, I led th
 - ✓ Compliance: On-premise hosting, strict audit trails, GDPR-ready
 - ✓ Delivery: Production-ready SDD, clear implementation roadmap
 
-The architecture has now been deployed and delovered, with development teams building microservices according to the design specifications.
+The architecture has now been deployed and delivered, with development teams building microservices according to the design specifications.
 
 ---
 
