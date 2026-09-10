@@ -770,7 +770,7 @@ Four risks carry High impact and aren't fully closed by an existing mitigation: 
 
 ### References
 - TOGAF 10 Enterprise Architecture Framework
-- T11 TOGAF Master Template
+- T10 TOGAF Master Template
 - Microservices Architecture Patterns
 
 ---
