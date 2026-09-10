@@ -154,133 +154,25 @@ Here are the key architectural decisions for the Unified Service Platform soluti
 ### I. Foundational Choices
 
 #### Overall Architecture Style
-**Microservices Architecture**
+**Decision:** Microservices architecture, decomposing the platform into 8 independently deployable services behind a single API Gateway.
 
-**Justification:**
-- **Scalability:** Microservices allow individual services to be scaled independently based on their specific needs.
-- **Reliability and Fault Isolation:** If one service fails, it doesn't bring the entire system down. This improves the overall resilience of the application.
-- **Agility and Faster Deployment Cycles:** Microservices enable development teams to work on different services concurrently, using different technologies if needed.
-- **Technology Diversity:** Microservices architecture allows the flexibility to choose the best technology for each service.
-- **Complexity Management:** Microservices break down a complex application to smaller, more manageable parts, making it easier to understand, develop and maintain.
-
-**Alternatives Considered:**
-- **Monolithic architecture:** All components are tightly coupled and deployed as a single unit. It was rejected due to its limitations in scalability, maintainability and deployment speed. This is quite a complex project and it is expected to grow in size. This would become difficult to manage, if a monolithic architecture is considered.
-- **Layered architecture:** This does not offer the same degree of independent deployability and scalability as microservices.
-
-**Impact:**
-- Improved Scalability and Maintainability: Microservices enable independent scaling and easier maintenance of individual services.
-- Increased Deployment and Management Complexity: Microservices introduce complexity in deployment, networking, service discovery and monitoring.
-- Requires robust API Management and Service Discovery: Effective API management and service discovery mechanisms are essential for microservices to communicate and function correctly.
-
-**Stakeholders:**
-- Engineering Team
-- Operations
-- Business Owners
-
-**Documentation:**
-- The high-level diagram illustrating the microservices architecture, showing the API Gateway (hosted in the User Interface), individual services and their interconnections will be created.
+Chosen over a monolithic or layered alternative for independent scaling, fault isolation, and deployment agility. Full context, alternatives considered, phased rollout plan, and risk register: see **ADR-001** in [`Architecture_Decision_Records.md`](Architecture_Decision_Records.md).
 
 ---
 
 #### Technology Stack
 
-**Decision:**
-- **Backend:** .NET for services, Node.js with Express.js for API Gateway
-- **Database:** PostgreSQL for workflows, Redis for caching
-- **Messaging:** Kafka
-- **Platform:** OpenShift Environment
+**Decision:** .NET Core for microservices, Node.js/Express.js for the API Gateway, PostgreSQL for transactional data, Redis for caching/sessions, Kafka for async messaging, deployed on OpenShift.
 
-**Rationale:**
-
-**Backend Technologies:**
-- **.NET:**
-  - Mature, Robust and Enterprise-Grade: ASP.NET Core works beautifully with modular microservices and REST APIs.
-  - Performance and Scalability: Ranks as one of the top 3 web frameworks in performance.
-  - Security: Built-in support for OAuth2, OpenID Connect and role-based access.
-  - Cross-platform: ASP.NET Core runs perfectly in Linux containers inside OpenShift/Kubernetes.
-
-- **Node.js & Express.js:**
-  - Non-blocking I/O and Asynchronous nature: Node.js with its non-blocking I/O model, is well-suited for building the API gateway. It can efficiently handle a large number of concurrent connections, routing requests to the appropriate backend services. Express.js simplifies the development of RESTful APIs.
-
-**Database Technologies:**
-- **PostgreSQL:**
-  - ACID-Compliant and Reliable: PostgreSQL is a robust, open-source relational database that provides strong support for ACID properties. This is essential for maintaining the integrity of financial transactions and ensuring data consistency.
-  - Data Integrity and Complex Queries: PostgreSQL excels at handling complex queries and maintaining data relationships, which are necessary for accurate reporting and auditing.
-
-- **Redis:**
-  - In-Memory Data Store and Caching: Redis is an in-memory data store that provides extremely fast read and write operations. It is used for caching frequently accessed data to improve the performance of the application and reduce the load on the PostgreSQL database.
-  - Session Management: Redis can also be used for efficient session management in the distributed microservices environment.
-
-**Messaging Technology:**
-- **Kafka:**
-  - Scalable and Fault-Tolerant Messaging: Kafka is a distributed, fault-tolerant messaging system that enables asynchronous communication between microservices. It is used for handling events and background tasks, such as sending notifications and processing settlements, allowing services to operate independently and reliably.
-
-**Platform Technology:**
-- **OpenShift Container Platform (OCP):** Enterprise Kubernetes distribution for managing and orchestrating containers at scale.
-
-**Dependencies:**
-- .NET: ASP.NET has specific version requirements to ensure compatibility and proper functioning.
-
-**Licensing:**
-- If deploying on Windows, .NET would require valid OS licenses. However, using a Linux body, it is opensource.
-- Node.js, PostgreSQL, Redis and Kafka technologies are primarily open-source and available under permissive licenses.
-
-**Skillset:**
-- The technology stack requires developers with skills in ASP.NET, Node.js, Express.js PostgreSQL, Redis, Kafka and Kubernetes. The availability of developers with these skills will influence the project's staffing.
-
-**Impact:**
-- Performance and Scalability: The chosen technology stack, with its emphasis on high-performance frameworks, caching and scalable messaging will significantly impact the system's ability to handle a large number of users and traffic.
-- Development Speed and Maintainability: The use of mature frameworks and a modular architecture will influence the speed of development and the long-term maintainability of the system.
-
-**Stakeholders:**
-Engineering, DevOps, ESSM, Budget Holders
+Selected for enterprise-grade maturity, open-source licensing (no FX-exposed cost), and OpenShift/Kubernetes compatibility. Full rationale, licensing and skillset detail, alternatives note, and risk register: see **ADR-002** in [`Architecture_Decision_Records.md`](Architecture_Decision_Records.md).
 
 ---
 
 #### Deployment Strategy
 
-**Decision:**
-Private cloud-based deployment using OpenShift managed Kubernetes clusters with CI/CD pipelines.
+**Decision:** Private cloud-based deployment on the organization's own OpenShift-managed Kubernetes clusters, with CI/CD automation.
 
-**Justification:**
-- **Scalability and Elasticity within Private Infrastructure:** OpenShift provides enterprise-grade Kubernetes capabilities, allowing the application to dynamically scale based on internal demands while maintaining strict data residency and compliance requirements. This ensures robust performance during transaction spikes without relying on public cloud resources.
-
-- **Automated Deployments for Faster Releases (Deployment and Operations):** CI/CD pipelines automate the build, test, and deployment processes, ensuring faster, reliable, and repeatable releases of new features, patches, and updates within the private cloud infrastructure.
-
-- **Cost Control and Infrastructure Ownership:** By utilizing existing private cloud investments, the organization avoids ongoing public cloud consumption costs, retains full control over infrastructure, and achieves cost predictability for scaling needs.
-
-**Alternatives Considered:**
-- **Public Cloud (Azure):** Rejected for this deployment phase due to high cost of fees as a result of fluctuating foreign exchange and security policy requirements mandating internal hosting.
-- **Hybrid Cloud:** The private cloud is perfectly suitable to host all components since it is privately managed.
-
-**Infrastructure:**
-- OpenShift Container Platform (OCP): Enterprise Kubernetes distribution for managing and orchestrating containers at scale.
-- VMs/Bare Metal Nodes: Compute resources (VMs or physical servers) provisioned as worker nodes for the OpenShift/Kubernetes cluster.
-- Internal PostgreSQL Cluster: Managed PostgreSQL databases hosted within the private cloud environment.
-- Internal Redis Deployment: Redis instances deployed as containerized services within OpenShift for caching needs.
-- Private Load Balancers: Internal load balancers distribute application traffic across multiple pods and services, ensuring availability and performance.
-
-**Automation:**
-- **CI/CD Pipelines with Jenkins/GitLab CI (Self-hosted):**
-  - Jenkins or GitLab CI runners hosted inside the private cloud automate build, test, and deployment processes.
-  - Infrastructure as Code (IaaC) with Terraform/Ansible:
-  - Terraform (with private cloud provider modules) or Ansible is used to define, manage, and provision infrastructure as code, ensuring repeatability and auditable changes.
-
-**Disaster Recovery:**
-- **Multi-Cluster Hosting (if applicable):** Deploying across multiple clusters or nodes within the private cloud environment ensures high availability and failover capabilities.
-- **Database Backups and Point-in-Time Recovery:** Regular backup policies and PITR strategies are enforced on internal PostgreSQL databases.
-- **Cluster Health and Auto-Healing:** Kubernetes/OpenShift-native auto-healing features detect and recover from node or pod failures.
-
-**Monitoring:**
-- **OpenShift Monitoring Stack:** Leveraging OpenShift's native Prometheus, alertmanager, and Grafana for cluster and application monitoring, using the Application Platform Management platform (APM).
-- **Centralized Logging with OpenShift Logging (EFK Stack):** Elasticsearch, Fluent, and Kibana for log aggregation, indexing, and search capabilities within the private cloud.
-
-**Cost:**
-- **Capex Model:** Costs are primarily associated with infrastructure ownership, maintenance, and internal resource management rather than pay-per-use.
-- **Optimization Strategies:** Resource quotas, autoscaling policies, and periodic right-sizing audits help optimize resource utilization and costs.
-
-**Stakeholders:**
-- ESSM Team, DevOps Engineers, Application Owners, Application Support Team, Security & Compliance Officers.
+Chosen over public cloud (Azure) and hybrid cloud, driven by the data residency and on-premise hosting constraints in Section 2. Full infrastructure detail, disaster recovery posture, monitoring, cost model, and risk register: see **ADR-003** in [`Architecture_Decision_Records.md`](Architecture_Decision_Records.md).
 
 ---
 

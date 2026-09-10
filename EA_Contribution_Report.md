@@ -92,97 +92,25 @@ I established three tiers of architectural drivers:
 
 #### 3.1 Foundational Decision: Microservices Architecture
 
-**Decision:** Adopt microservices architecture with API Gateway pattern
+**Decision:** Adopt microservices architecture with an API Gateway pattern, decomposing the system into 8 independently deployable services.
 
-**Justification:**
-- **Scalability:** Independent service scaling based on demand (e.g., scale Service Desk during high-ticket volume, not entire platform)
-- **Fault Isolation:** Service failures don't cascade system-wide, improving resilience
-- **Agility:** Teams can deploy features independently using appropriate tech stacks
-- **Technology Flexibility:** Choice of best technology per service (e.g., .NET for transaction-heavy services, Node.js for high-concurrency API gateway)
-- **Complexity Management:** Breaks monolithic 13-function system into 8 manageable, single-responsibility services
-
-**Alternatives Evaluated:**
-1. **Monolithic Architecture** – Rejected due to scalability ceiling and deployment inflexibility
-2. **Layered Architecture** – Rejected due to insufficient independent deployability
-
-**Decision Impact:**
-- ✓ Improved scalability and maintainability
-- ⚠ Increased operational complexity (service discovery, distributed debugging, network latency)
-- → Required robust API management and orchestration strategy
+I evaluated this against monolithic and layered alternatives and chose microservices for independent scaling, fault isolation, and deployment agility. Full context, alternatives, phased implementation plan, and risk register: **ADR-001** in [`Architecture_Decision_Records.md`](Architecture_Decision_Records.md).
 
 ---
 
 #### 3.2 Technology Stack Decision
 
-**Backend Selection:**
-- **.NET Core** for microservices (Service Desk, Change Management, Problem Management, etc.)
-  - Enterprise-grade, ACID-compliant, OAuth2/OpenID support
-  - Top 3 web framework performance ranking
-  - Linux containerization capability (OpenShift compatibility)
+**Decision:** .NET Core for microservices, Node.js/Express.js for the API Gateway, PostgreSQL for transactional data, Redis for caching/sessions, Kafka for async messaging, all on OpenShift.
 
-- **Node.js + Express.js** for API Gateway
-  - Non-blocking I/O handles high concurrent connections efficiently
-  - Lightweight request routing and response aggregation
-  - Faster development cycle for routing layer
-
-**Data Layer:**
-- **PostgreSQL** for transactional data (workflows, tickets, relationships)
-  - ACID compliance (essential for financial/transaction integrity)
-  - Complex query support (critical for reporting/auditing)
-  - Open-source on Linux
-
-- **Redis** for caching and session management
-  - In-memory performance (< 1ms read/write latency)
-  - Session distribution across microservices
-  - Reduces PostgreSQL load
-
-**Messaging:**
-- **Apache Kafka** for asynchronous, event-driven communication
-  - Fault-tolerant message delivery
-  - Enables services to operate independently
-  - Supports event streaming for real-time dashboards
-
-**Platform:**
-- **OpenShift Container Platform** (Enterprise Kubernetes)
-  - Orchestration at scale
-  - Native service discovery
-  - Aligns with constraint: on-premise deployment
-
-**Licensing Impact:**
-- .NET: Open-source on Linux (no Windows licensing cost)
-- Node.js, PostgreSQL, Redis, Kafka: All open-source (cost reduction vs. vendor platform)
-
-**Skill Requirement:** Identified need for ASP.NET, Node.js, PostgreSQL, Kafka, Kubernetes expertise in hiring/training plan
+Selected for enterprise maturity, open-source licensing, and OpenShift compatibility. Full rationale, a noted gap around undocumented alternatives, and risk register: **ADR-002** in [`Architecture_Decision_Records.md`](Architecture_Decision_Records.md).
 
 ---
 
 #### 3.3 Deployment Strategy: Private Cloud OpenShift
 
-**Decision:** Private cloud-based deployment using OpenShift managed Kubernetes with CI/CD automation
+**Decision:** Private cloud-based deployment using OpenShift-managed Kubernetes, with CI/CD automation.
 
-**Rationale:**
-1. **Data Residency Compliance:** On-premise deployment satisfies NDPR requirement (no data in public cloud)
-2. **Cost Ownership:** Leverages existing private cloud investment, avoiding public cloud consumption fees
-3. **Cost Predictability:** Capex model with infrastructure ownership vs. unpredictable public cloud scaling costs
-4. **Automated Deployment:** CI/CD pipelines (Jenkins/GitLab) enable faster, reliable release cycles
-
-**Infrastructure Components:**
-- OpenShift Container Platform (OCP) for orchestration
-- Internal PostgreSQL cluster with managed backups
-- Internal Redis cluster for distributed caching
-- Private load balancers for traffic distribution
-- Jenkins/GitLab for CI/CD pipeline automation
-- Infrastructure-as-Code (Terraform/Ansible) for repeatability
-
-**Disaster Recovery Posture:**
-- Multi-cluster deployment capability for failover
-- Database backup frequency: Daily full backups + hourly transaction logs
-- Recovery Time Objective (RTO): < 4 hours
-- Recovery Point Objective (RPO): < 1 hour
-
-**Eliminated Alternatives:**
-- **Public Cloud (Azure):** Rejected due to foreign exchange cost exposure and compliance mandate
-- **Hybrid Cloud:** Unnecessary—private cloud capacity adequate for current and projected loads
+Driven by the data residency and on-premise hosting constraints identified in Phase A. Full infrastructure detail, DR posture, eliminated alternatives, and risk register: **ADR-003** in [`Architecture_Decision_Records.md`](Architecture_Decision_Records.md).
 
 ---
 
@@ -401,7 +329,7 @@ Documented:
 
 2. **Stakeholder Persona Analysis** – 17 personas with detailed motivations/concerns
 
-3. **Architecture Decision Records** – Rationale for major technology/design choices
+3. **Architecture Decision Records** – 3 full ADRs (architecture style, technology stack, deployment strategy) covering context, alternatives, phased implementation, risk register, and success criteria — see [`Architecture_Decision_Records.md`](Architecture_Decision_Records.md)
 
 4. **Component Interaction Diagrams** – Service dependencies, communication patterns, data flows
 

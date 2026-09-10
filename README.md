@@ -65,7 +65,17 @@ A professional summary of my architectural contributions and decision-making rat
 
 **Audience:** Hiring managers, portfolio reviewers, fellow architects, engineering leadership
 
-#### 3. **README.md** (this file)
+#### 3. **Architecture_Decision_Records.md**
+The three foundational architecture decisions in full ADR form — context, decision, rationale and alternatives, phased implementation plan, risk register, success criteria, next steps, and sign-off.
+
+**Contains:**
+- **ADR-001:** Adopt Microservices Architecture
+- **ADR-002:** Select the Technology Stack
+- **ADR-003:** Deploy on Private Cloud OpenShift
+
+**Audience:** Architects and reviewers who want the full decision record behind the summaries in the SDD and EA Contribution Report, rather than the condensed version referenced inline in each.
+
+#### 4. **README.md** (this file)
 Guide to understanding and using the portfolio materials.
 
 ---
@@ -397,9 +407,10 @@ For questions about specific architectural decisions, rationale, or implementati
 
 - **SDD_Anonymized_Portfolio.md** – Solutions Design Document (26 pages)
 - **EA_Contribution_Report.md** – Architectural Contribution Summary (detailed analysis)
+- **Architecture_Decision_Records.md** – ADR-001 through ADR-003, full decision records
 - **README.md** – This guide you're reading.
 
-**Total Portfolio:** ~12,000 words of architecture documentation and analysis.
+**Total Portfolio:** ~12,000 words of architecture documentation and analysis, plus 3 full ADRs.
 
 ---
 
