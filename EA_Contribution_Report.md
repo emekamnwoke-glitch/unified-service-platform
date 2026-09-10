@@ -311,6 +311,11 @@ I decomposed the 13-function monolithic system into **8 independently deployable
 - Regulatory support: Data deletion, consent tracking, access request fulfillment (GDPR-ready)
 - Vulnerability management: Regular scans, quarterly penetration tests
 
+**Data Classification & Secrets Management** *(see SDD §4.4 for the full scheme)*:
+- Four-tier classification (Public / Internal / Confidential / Restricted-PII) mapped to every service's data, so encryption-at-rest and access rules apply consistently rather than per-service judgment calls
+- Secrets (DB credentials, Kafka SASL, OAuth client secrets, Redis AUTH) held in OpenShift Secrets, scoped per-service ServiceAccount — no shared credential across microservices
+- Rotation: 90 days for DB/Kafka credentials, 180 days for OAuth client secrets
+
 ---
 
 ### 7. Governance & Documentation
@@ -422,7 +427,7 @@ Documented:
 | **Phase F: Migration Planning** | Phased deployment approach | In Progress |
 | **Phase G: Implementation Governance** | Architecture Contract, compliance assessments | Not Started |
 
-*Phases C and D carry three open items tracked in the SDD (§6.4): API Gateway resilience, Kafka partition sizing, and data classification. Scoped, not yet closed.*
+*Phases C and D carry two open items tracked in the SDD (§6.4): API Gateway resilience and Kafka partition sizing. A third — data classification — was closed during this iteration (SDD §4.4).*
 
 ---
 

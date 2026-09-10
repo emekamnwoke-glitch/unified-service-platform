@@ -478,6 +478,40 @@ Each microservice owns its schema exclusively — no service reads another servi
 
 This boundary is what keeps the independent-deployment claim in Section 3 true in practice: a schema migration in Problem Management cannot break Service Desk Management, because neither touches the other's tables.
 
+### 4.4 Data Classification and Secrets Management
+
+Closes the gap flagged in Section 6.4: the encryption-at-rest and access-control decisions in Section 3 (Security, QD4) need a classification scheme to apply consistently across eight independently-owned schemas, rather than each service inventing its own rule.
+
+**Classification levels**
+
+| Level | Definition | Handling Requirements |
+|---|---|---|
+| Public | No confidentiality requirement | No special handling |
+| Internal | Authenticated staff only, low sensitivity | RBAC read access; transport encryption only |
+| Confidential | Sensitive business/operational data | RBAC + PostgreSQL column-level encryption at rest; access audit-logged |
+| Restricted (PII) | Personal data subject to NDPR/GDPR | Encryption at rest and in transit, field-level masking in logs/reports, access limited to the owning service plus explicit admin grant, in scope for data-subject deletion/export requests |
+
+**Mapping by service**
+
+| Service | Data | Classification |
+|---|---|---|
+| Service Desk Management | Ticket content, requester contact details | Restricted (PII) |
+| Knowledge Management | Published articles | Public |
+| Knowledge Management | Draft/unpublished articles | Internal |
+| Change Management | Change records, approval history | Confidential |
+| Problem Management | RCA documents | Confidential |
+| Release Management | Release schedules | Internal |
+| Administrative Access Management | User accounts, roles, session tokens | Restricted (PII) |
+| Post-Implementation Review | Review outcomes | Internal |
+| Asset & Configuration Management | CMDB configuration items, cost-center mappings | Confidential |
+
+**Secrets management**
+
+- **Store:** Database credentials, Kafka SASL credentials, OAuth 2.0 client secrets, and Redis AUTH tokens live in OpenShift Secrets objects, mounted into pods as environment variables or files. None are committed to source control or baked into container images.
+- **Scope:** Each microservice's OpenShift ServiceAccount can reach only the secrets it owns — its own database credential, its own Kafka identity — no shared credential spans services. This mirrors the least-privilege data boundary in Section 4.3; a compromised Problem Management pod cannot use its credentials to reach Change Management's database.
+- **Rotation:** Database and Kafka credentials rotate every 90 days through the CI/CD pipeline; OAuth 2.0 client secrets rotate every 180 days, or immediately on suspected compromise.
+- **Audit:** Secret access and rotation events log to the same EFK stack used for application logging (Section 5.3), which is what makes them show up in the 100%-critical-operations audit trail committed to under QD8.
+
 ---
 
 ## 5. Architecture Models
@@ -642,9 +676,9 @@ Where the design changed between the initial driver-gathering pass and this vers
 
 Recorded here rather than left unstated:
 
-- **API Gateway single point of failure:** currently one logical gateway tier; circuit-breaker and multi-instance failover behavior needs its own decision record before Phase D sign-off.
-- **Kafka partition sizing:** topic partition counts have not yet been load-tested against the 1000 req/sec throughput target (QD3) — planned for the performance-testing pass referenced in Section 3.
-- **Data classification:** a formal classification scheme (e.g., PII / confidential / internal / public) for CMDB and ticket data has not been produced yet, and is needed before the encryption-at-rest scope can be finalized per column.
+- **API Gateway single point of failure (Open):** currently one logical gateway tier; circuit-breaker and multi-instance failover behavior needs its own decision record before Phase D sign-off.
+- **Kafka partition sizing (Open):** topic partition counts have not yet been load-tested against the 1000 req/sec throughput target (QD3) — planned for the performance-testing pass referenced in Section 3.
+- **Data classification (Resolved — see Section 4.4):** the classification scheme and secrets-management approach are now defined, closing the gap between QD4 (Security) and the encryption-at-rest scope this section originally flagged as missing.
 
 ---
 
