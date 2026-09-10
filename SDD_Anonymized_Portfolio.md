@@ -669,6 +669,46 @@ Entirely local-currency-denominated — no FX exposure, by design, since ADR-002
 
 The "40–60% reduction" figure cited elsewhere in this portfolio is directionally right but doesn't match this model's own output: this model produces **33.5% to 50%**, depending on the FX scenario — the low end of "40–60%" isn't reached in a stable-FX year, and the high end isn't reached even under severe depreciation. Recommendation: cite the range and its FX dependency ("33–50%, wider under currency depreciation") rather than a flat 40–60% — a claim this model doesn't actually produce, illustrative or not.
 
+### 8.6 Real-World Reference Point (Freshdesk, April 2025)
+
+**This subsection names the actual vendor product being replaced — Freshdesk (Freshworks) — rather than staying illustrative.** Sections 8.1–8.5 above stay illustrative by design, so they hold up regardless of which specific vendor a reader compares against; this subsection exists as a sanity check against the real thing, using real pricing and real exchange rates from the SDD's own timeframe.
+
+**Freshdesk pricing used:** Enterprise plan (support-desk/ticketing line), $89/agent/month, annual billing. Freddy AI Copilot ($29/agent/month) is excluded — that capability wasn't available to license at the time this design was built.
+
+One accuracy note: Freshdesk is Freshworks' customer-support ticketing product. The fuller ITIL-style scope this SDD describes — Change Management approvals, Problem Management RCA, Release Management rollback, a CMDB — sits closer to Freshservice, Freshworks' separate ITSM product. Freshdesk is the closest real analog for this platform's ticketing and knowledge-base core, not a service-by-service match for all 8 microservices.
+
+**Exchange rates used (April 2025, matching this SDD's date):**
+
+| Rate | Value | Source Date |
+|---|---|---|
+| CBN official — start of month | ₦1,531/$1 | April 2, 2025 |
+| CBN official — representative | ₦1,600/$1 | April 15–17, 2025 |
+| CBN official — mid-month peak | ₦1,637/$1 | Mid-April 2025 |
+| Parallel market | ~₦1,555/$1 | April 2, 2025 |
+
+The naira moved roughly 6–7% against the dollar within April 2025 alone — real, not modeled. That's the FX exposure ADR-003 and the Cost Optimization business driver (Section 2A) exist to eliminate, showing up inside a single month rather than across fiscal years.
+
+**Annual cost, 500 agents, Freshdesk Enterprise (no AI add-on):**
+
+$89 × 500 × 12 = **$534,000/year** — identical, coincidentally, to the illustrative Year 1 figure already used in Section 8.2.
+
+| Rate Applied | Annual Cost in Naira |
+|---|---|
+| CBN, start of month (₦1,531) | ₦817,554,000 |
+| CBN, representative (₦1,600) | ₦854,400,000 |
+| CBN, mid-month peak (₦1,637) | ₦874,158,000 |
+| Parallel market (₦1,555) | ₦830,370,000 |
+
+**Applying a 46% reduction — inside this model's own 33.5–50% range (Section 8.4) — to this real figure:**
+
+| Metric | USD | NGN (at ₦1,600 representative) |
+|---|---|---|
+| Freshdesk annual cost | $534,000 | ₦854,400,000 |
+| Savings (46%) | $245,640 | ₦393,024,000 |
+| Remaining internal-equivalent cost | $288,360 | ₦461,376,000 |
+
+That remaining figure — $288,360/year — lands close to Section 8.3's modeled steady-state internal cost ($250,000/year: 3 FTEs plus infrastructure). The roughly $38,000 gap is a reasonable buffer for exactly what Section 8.3 doesn't itemize — the staffing ramp and per-work-package cost breakdown already flagged as open in Section 7.3.
+
 ---
 
 ## 9. Appendix
