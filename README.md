@@ -31,7 +31,7 @@ Design a microservices-based, cloud-native IT service management platform deploy
 ### 📋 Documents Included
 
 #### 1. **SDD_Anonymized_Portfolio.md**
-The complete Solutions Design Document in anonymized form (~6,000 words).
+The complete Solutions Design Document in anonymized form (~8,000 words, ~40 pages).
 
 **Sections:**
 - **Introduction:** Business overview, purpose, key functionalities, target users, business problems solved
@@ -46,7 +46,7 @@ The complete Solutions Design Document in anonymized form (~6,000 words).
 **Audience:** Enterprise architects, solution designers, technical leadership, engineering teams
 
 #### 2. **EA_Contribution_Report.md**
-A professional summary of my architectural contributions and decision-making rationale (~5,000 words).
+A professional summary of my architectural contributions and decision-making rationale (~2,500 words).
 
 **Sections:**
 - **Executive Summary:** High-level outcomes and impact
@@ -245,20 +245,7 @@ Each persona has documented motivations, concerns, expected benefits, and portal
 
 ## Trade-Offs & Decisions
 
-### Complexity vs. Scalability
-**Decision:** Microservices (chose complexity for scalability)  
-**Trade-off:** Operational burden (service discovery, distributed debugging)  
-**Mitigation:** OpenShift orchestration, comprehensive monitoring
-
-### Upfront Effort vs. Long-Term Flexibility
-**Decision:** Domain-driven decomposition (chose upfront effort for flexibility)  
-**Trade-off:** Higher initial design/implementation complexity  
-**Mitigation:** Independent team delivery, parallel development
-
-### Open-Source vs. Vendor Support
-**Decision:** .NET, PostgreSQL, Kafka (chose open-source for cost)  
-**Trade-off:** No vendor SLA  
-**Mitigation:** Community support, internal ESSM team capacity
+Three trade-offs run through this architecture — microservices' complexity vs. its scalability payoff, domain-driven decomposition's upfront effort vs. its long-term flexibility, and open-source's no-vendor-SLA risk vs. its cost savings. The full breakdown, including mitigations, lives in `EA_Contribution_Report.md`'s **Key Decisions & Trade-Offs** section, and each decision's fuller rationale and alternatives are in the corresponding ADR (`Architecture_Decision_Records.md`).
 
 ---
 
@@ -292,7 +279,7 @@ Each persona has documented motivations, concerns, expected benefits, and portal
 | **Availability** | 99.9% uptime | ✓ Designed into infrastructure |
 | **Performance** | 200ms response time, 1000 req/sec | ✓ Tech stack supports targets |
 | **Deployment Cycle** | Days (vs. weeks with vendor) | ✓ CI/CD automation enables |
-| **Documentation** | TOGAF-compliant SDD | ✓ 26-page design document |
+| **Documentation** | TOGAF-compliant SDD | ✓ ~40-page design document, plus 3 ADRs |
 
 ---
 
@@ -327,7 +314,7 @@ Each persona has documented motivations, concerns, expected benefits, and portal
 
 ## TOGAF Methodology Reference
 
-This architecture demonstrates mastery of TOGAF 10 ADM phases:
+This architecture demonstrates TOGAF 10 ADM phases A through E in full, with F and G honestly tracked rather than hidden:
 
 **Phase A: Architecture Vision**
 - ✓ Business case articulation
@@ -343,15 +330,23 @@ This architecture demonstrates mastery of TOGAF 10 ADM phases:
 - ✓ Data models (relational + event-based)
 - ✓ Service definitions (8 microservices)
 - ✓ Interfaces (REST + Kafka)
+- *Substantially complete — 2 open items tracked in SDD §6.4 (API Gateway resilience, Kafka partition sizing)*
 
 **Phase D: Technology Architecture**
 - ✓ Technology stack (selected + rationale)
 - ✓ Deployment strategy (OpenShift)
 - ✓ Infrastructure topology
+- *Substantially complete — same 2 open items above also apply here*
 
 **Phase E: Opportunities & Solutions**
 - ✓ Implementation roadmap (MVP definition)
 - ✓ Phased delivery approach
+
+**Phase F: Migration Planning**
+- ⏳ In Progress — phased rollout defined (SDD §7.2), execution not yet started
+
+**Phase G: Implementation Governance**
+- Not Started — no ARB sign-off yet on any of the 3 ADRs (`Architecture_Decision_Records.md`)
 
 ---
 
@@ -366,8 +361,8 @@ As Enterprise Architect, I was tasked with replacing a vendor-dependent IT servi
 5. **Selected technology stack:** .NET, PostgreSQL, Kafka, OpenShift (open-source, cost-effective)
 6. **Designed deployment strategy:** Private cloud (compliance) vs. public (cost)
 7. **Decomposed system:** 13 functions → 8 microservices with clear boundaries
-8. **Documented everything:** 26-page TOGAF-compliant SDD
-9. **Handed off to engineering:** Ready for implementation
+8. **Documented everything:** ~40-page TOGAF-compliant SDD, plus 3 full ADRs
+9. **Handed the design to migration planning:** Phase F is underway; implementation governance (Phase G) and build-out haven't started yet — see `EA_Contribution_Report.md` for current status
 
 ---
 
@@ -405,12 +400,12 @@ For questions about specific architectural decisions, rationale, or implementati
 
 ## Table of Files
 
-- **SDD_Anonymized_Portfolio.md** – Solutions Design Document (26 pages)
+- **SDD_Anonymized_Portfolio.md** – Solutions Design Document (~40 pages)
 - **EA_Contribution_Report.md** – Architectural Contribution Summary (detailed analysis)
 - **Architecture_Decision_Records.md** – ADR-001 through ADR-003, full decision records
 - **README.md** – This guide you're reading.
 
-**Total Portfolio:** ~12,000 words of architecture documentation and analysis, plus 3 full ADRs.
+**Total Portfolio:** ~13,500 words across the SDD, EA Contribution Report, and 3 ADRs.
 
 ---
 

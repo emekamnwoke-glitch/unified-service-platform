@@ -319,7 +319,7 @@ Documented:
 ## Deliverables Produced
 
 ### Primary Artifacts
-1. **Solutions Design Document (SDD)** – 26 pages, TOGAF-compliant
+1. **Solutions Design Document (SDD)** – ~40 pages, TOGAF-compliant
    - Architectural drivers (33 items: 4 business, 10 functional, 10 quality, 9 constraints)
    - Foundational architectural decisions (4 major decisions)
    - Component decomposition (8 microservices with responsibilities)

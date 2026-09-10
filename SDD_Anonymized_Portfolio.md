@@ -332,7 +332,7 @@ Decompose the IT Service Management system into the following microservices:
 - **Enables Independent Deployment:** Feature releases or patches can be deployed service-by-service without system-wide risks.
 
 **Diagram:**
-A component diagram will be developed to visually represent the microservices and their interactions, highlighting how support flows through the system from Service Desk to Change Management, to Post Implementation Review.
+See Section 5.2 (Container View) for the component diagram — the API Gateway, all 8 microservices, and their interactions, including how support flows from Service Desk to Change Management to Post-Implementation Review.
 
 **Stakeholders:**
 - Development Teams: Each team responsible for one or more services.
