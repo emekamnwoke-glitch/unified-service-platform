@@ -448,19 +448,203 @@ A component diagram will be developed to visually represent the microservices an
 
 ## 4. Architectural Components, Interfaces, Properties and Composition
 
-(Detailed sections on component specifications, API contracts, data models, and deployment properties would be documented here, following the same structure as the original document.)
+### 4.1 Component Specifications
+
+Representative interface contracts and event integration per service. Endpoints and topics shown are illustrative, not exhaustive — full API contracts live in the platform's OpenAPI specifications, out of scope for this anonymized portfolio version.
+
+| Service | Primary Data Store | Representative REST Endpoints | Kafka Topics Published | Kafka Topics Consumed | Scaling Property |
+|---|---|---|---|---|---|
+| Service Desk Management | PostgreSQL (tickets schema) | `POST /tickets`, `GET /tickets/{id}`, `PATCH /tickets/{id}/status` | `ticket.created`, `ticket.updated`, `ticket.escalated` | `sla.breach.warning` | Horizontal — scales with ticket volume; sized for 5x baseline during incident surges |
+| Knowledge Management | PostgreSQL (kb schema) + Redis (search cache) | `GET /kb/articles`, `GET /kb/search?q=`, `POST /kb/articles` | `article.published` | `ticket.created` (suggested-article matching) | Read-heavy — Redis absorbs repeat queries; horizontal read replicas |
+| Change Management | PostgreSQL (changes schema) | `POST /changes`, `PATCH /changes/{id}/approve`, `GET /changes/calendar` | `change.requested`, `change.approved`, `change.completed` | `problem.linked` | Low-to-moderate — scales with change volume, not user volume |
+| Problem Management | PostgreSQL (problems schema) | `POST /problems`, `GET /problems/{id}/rca` | `problem.raised`, `problem.resolved` | `ticket.escalated`, `monitoring.anomaly.detected` | Moderate — driven by incident correlation load |
+| Release Management | PostgreSQL (releases schema) | `POST /releases`, `POST /releases/{id}/rollback` | `release.scheduled`, `release.deployed`, `release.rolledback` | `change.approved` | Low — release-cadence-bound, not request-volume-bound |
+| Administrative Access Management | PostgreSQL (admin schema) + Redis (session store) | `POST /users`, `PATCH /users/{id}/roles`, `POST /automation-rules` | `user.provisioned`, `role.changed` | — | Moderate — scales with concurrent logins |
+| Post-Implementation Review | PostgreSQL (pir schema) | `POST /reviews`, `GET /reviews/{changeId}` | `review.completed` | `change.completed` | Low — batch-oriented, runs after change closure |
+| Asset & Configuration Management | PostgreSQL (cmdb schema) | `POST /assets`, `GET /cmdb/{ci}/relationships` | `asset.updated`, `ci.relationship.changed` | `release.deployed` (updates CI version) | Low-to-moderate — CMDB writes are infrequent relative to reads |
+
+### 4.2 API Gateway Properties
+
+- **Technology:** Node.js + Express.js, stateless, horizontally scaled behind the private load balancer.
+- **Responsibilities:** Request routing, JWT validation (OAuth 2.0/OIDC), rate limiting, response aggregation for composite views (e.g., a ticket detail view joining Service Desk and Knowledge Management data).
+- **Non-functional target:** Sub-50ms routing overhead per request, independent of backend service latency, so the gateway doesn't consume the 200ms end-to-end response budget set by QD3.
+
+### 4.3 Data Ownership and Boundaries
+
+Each microservice owns its schema exclusively — no service reads another service's tables directly. Cross-service data needs are met two ways:
+
+- **Synchronous REST**, via the API Gateway, for real-time reads (e.g., Change Management checking CI impact with Asset & Configuration Management before approval).
+- **Asynchronous Kafka events**, for eventual-consistency cases (e.g., Post-Implementation Review consuming `change.completed` instead of polling Change Management).
+
+This boundary is what keeps the independent-deployment claim in Section 3 true in practice: a schema migration in Problem Management cannot break Service Desk Management, because neither touches the other's tables.
 
 ---
 
 ## 5. Architecture Models
 
-(Comprehensive architecture models including C4 diagrams, deployment topology, integration flows, and data flow diagrams would be provided here.)
+### 5.1 System Context (C4 Level 1)
+
+```mermaid
+graph TB
+    User[Service Desk End Users /<br/>Support Staff]
+    Admin[Service Administrators]
+    USP[Unified Service Platform]
+    AD[Active Directory /<br/>Enterprise IdP]
+    Email[Email / Notification Gateway]
+    Monitoring[External Monitoring Systems]
+
+    User -->|Raises tickets, browses KB| USP
+    Admin -->|Configures roles, workflows| USP
+    USP -->|Authenticates via OAuth2/OIDC| AD
+    USP -->|Sends notifications| Email
+    Monitoring -->|Anomaly & health signals| USP
+```
+
+### 5.2 Container View (C4 Level 2)
+
+```mermaid
+graph TB
+    subgraph Client Layer
+        Web[Web Portal]
+    end
+
+    GW[API Gateway<br/>Node.js/Express]
+
+    subgraph Microservices - .NET Core
+        SD[Service Desk Mgmt]
+        KM[Knowledge Mgmt]
+        CM[Change Mgmt]
+        PM[Problem Mgmt]
+        RM[Release Mgmt]
+        AAM[Admin Access Mgmt]
+        PIR[Post-Implementation Review]
+        ACM[Asset & Config Mgmt]
+    end
+
+    PG[(PostgreSQL<br/>per-service schemas)]
+    Redis[(Redis<br/>cache & sessions)]
+    Kafka{{Kafka<br/>event bus}}
+
+    Web --> GW
+    GW --> SD & KM & CM & PM & RM & AAM & PIR & ACM
+
+    SD --> PG
+    KM --> PG
+    KM --> Redis
+    CM --> PG
+    PM --> PG
+    RM --> PG
+    AAM --> PG
+    AAM --> Redis
+    PIR --> PG
+    ACM --> PG
+
+    SD -.->|publish/consume| Kafka
+    KM -.->|publish/consume| Kafka
+    CM -.->|publish/consume| Kafka
+    PM -.->|publish/consume| Kafka
+    RM -.->|publish/consume| Kafka
+    PIR -.->|publish/consume| Kafka
+    ACM -.->|publish/consume| Kafka
+```
+
+### 5.3 Deployment Topology (OpenShift)
+
+```mermaid
+graph TB
+    LB[Private Load Balancer]
+
+    subgraph OpenShift Cluster - Private Cloud
+        subgraph "Namespace: usp-prod"
+            GWPod[API Gateway<br/>3+ replicas, HPA]
+            SvcPods[8 Microservice Deployments<br/>2-6 replicas each, HPA]
+            KafkaCluster[Kafka Cluster<br/>3 brokers]
+            RedisCluster[Redis Cluster<br/>primary + replica]
+        end
+        Monitoring[Prometheus / Grafana]
+        Logging[EFK Stack]
+    end
+
+    PGCluster[(Internal PostgreSQL Cluster<br/>primary + standby, daily backups)]
+
+    LB --> GWPod
+    GWPod --> SvcPods
+    SvcPods --> KafkaCluster
+    SvcPods --> RedisCluster
+    SvcPods --> PGCluster
+    SvcPods -.metrics.-> Monitoring
+    SvcPods -.logs.-> Logging
+```
+
+Each microservice deployment has its own Horizontal Pod Autoscaler tuned to the load profile in Section 4.1 — Service Desk Management and Knowledge Management scale most aggressively; Release Management and Post-Implementation Review stay near their floor replica count outside release windows.
+
+### 5.4 Representative Data Flow: Ticket Creation to Analytics
+
+```mermaid
+sequenceDiagram
+    participant U as End User
+    participant GW as API Gateway
+    participant SD as Service Desk Mgmt
+    participant K as Kafka
+    participant KM as Knowledge Mgmt
+    participant N as Notification Consumer
+    participant AAM as Admin Access Mgmt (Analytics)
+
+    U->>GW: POST /tickets
+    GW->>SD: Route + auth context
+    SD->>SD: Persist ticket (PostgreSQL)
+    SD->>K: publish ticket.created
+    K-->>KM: consume ticket.created
+    KM-->>KM: Match suggested KB articles
+    K-->>N: consume ticket.created
+    N-->>U: Send acknowledgement email
+    K-->>AAM: consume ticket.created
+    AAM-->>AAM: Update reporting aggregates
+    SD-->>GW: 201 Created
+    GW-->>U: Ticket confirmation + ID
+```
+
+This flow shows why Kafka sits on the critical path for interoperability (QD6) rather than performance (QD3): the ticket-creation response returns as soon as Service Desk Management persists the record, without waiting on Knowledge Management, notifications, or analytics — those three run asynchronously off the same event.
 
 ---
 
 ## 6. Architecture Model Refinements
 
-(Documentation of refinements and iterations on the architecture models would be included here, showing evolution of design decisions.)
+Where the design changed between the initial driver-gathering pass and this version (v0.1), and why.
+
+### 6.1 Synchronous → Asynchronous for Cross-Service Notifications
+
+**Initial design:** Service Desk Management called the Notification and Knowledge Management services directly and synchronously on ticket creation.
+
+**Problem identified:** Ticket-creation latency became dependent on the slowest downstream service, working directly against the 200ms response time target (QD3) — and a Knowledge Management outage could block ticket creation entirely, the opposite of the fault-isolation goal that justified microservices in Section 3.
+
+**Refinement:** Moved to the Kafka `ticket.created` event pattern in Section 5.4. Service Desk Management now returns as soon as its own write succeeds; each downstream consumer processes independently.
+
+**Trade-off accepted:** Notifications and KB suggestions are now eventually consistent (typically low hundreds of milliseconds via Kafka) rather than instantaneous. Acceptable because none of the three consumers sit on a user-blocking path.
+
+### 6.2 Redis Introduced After Initial Load Estimate
+
+**Initial design:** Knowledge Management served all article and search reads directly from PostgreSQL.
+
+**Problem identified:** Knowledge base reads are heavily skewed — a small number of popular articles account for most traffic — and the initial design put that load on the same PostgreSQL instance handling transactional writes for the same service.
+
+**Refinement:** Added a Redis cache in front of article reads (Section 4.1), invalidated on `article.published`. This reuses the same caching technology already needed for Admin Access Management's session store, rather than introducing a second one.
+
+### 6.3 CMDB Boundary Narrowed
+
+**Initial design:** Asset & Configuration Management's CMDB was scoped to own release version history directly, duplicating data Release Management already tracked.
+
+**Problem identified:** Two services owning overlapping data violated the single-owner data boundary in Section 4.3 and created a reconciliation risk between CMDB records and actual release state.
+
+**Refinement:** Asset & Configuration Management now maintains configuration items and their relationships only. Release version history stays owned by Release Management and reaches the CMDB via the `release.deployed` event, updating CI version fields rather than duplicating the source of truth.
+
+### 6.4 Open Items for the Next Iteration
+
+Recorded here rather than left unstated:
+
+- **API Gateway single point of failure:** currently one logical gateway tier; circuit-breaker and multi-instance failover behavior needs its own decision record before Phase D sign-off.
+- **Kafka partition sizing:** topic partition counts have not yet been load-tested against the 1000 req/sec throughput target (QD3) — planned for the performance-testing pass referenced in Section 3.
+- **Data classification:** a formal classification scheme (e.g., PII / confidential / internal / public) for CMDB and ticket data has not been produced yet, and is needed before the encryption-at-rest scope can be finalized per column.
 
 ---
 
