@@ -339,7 +339,7 @@ Documented:
 - Technology stack risk assessment
 - Budget impact analysis
 - Skill/staffing requirements
-- Implementation roadmap (MVP scope definition)
+- **Implementation roadmap (MVP scope definition)** — 5 work packages sequencing MVP and full rollout against dependency and target quarter, plus an explicit MVP exit criteria and scope cut: see SDD §7 ([`SDD_Anonymized_Portfolio.md`](SDD_Anonymized_Portfolio.md))
 
 ---
 

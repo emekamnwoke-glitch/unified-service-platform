@@ -15,7 +15,8 @@
 4. Architectural Components, Interfaces, Properties and Composition
 5. Architecture Models
 6. Architecture Model Refinements
-7. Appendix
+7. Implementation Roadmap and MVP Scope
+8. Appendix
 
 ---
 
@@ -574,7 +575,47 @@ Recorded here rather than left unstated:
 
 ---
 
-## 7. Appendix
+## 7. Implementation Roadmap and MVP Scope
+
+### 7.1 MVP Scope Definition
+
+The MVP is scoped to the smallest set of services that let the organization start retiring vendor dependency for the highest-priority drivers — Centralized Service Delivery and Operational Efficiency (both High priority, Section 2A) — without waiting for all 8 services to be built.
+
+**In MVP:**
+- **Service Desk Management** — the highest-volume, highest-priority functional driver (Ticket Lifecycle Management, Section 2B)
+- **Knowledge Management** — directly reduces ticket volume through self-service (Self-Service Portal driver, Section 2B)
+- **API Gateway and shared infrastructure** (Kafka, PostgreSQL, Redis clusters) — a non-negotiable dependency for either service above to run at all
+
+**Deferred to post-MVP:** Change Management, Problem Management, Release Management, Administrative Access Management, Post-Implementation Review, Asset & Configuration Management. None of these block the MVP's core value — resolving tickets and enabling self-service without the vendor platform.
+
+**MVP Exit Criteria:**
+- A pilot group's tickets flow entirely through Service Desk Management and Knowledge Management, with no vendor-platform dependency for those two functions
+- 90% user satisfaction (QD5) met within the pilot group
+- Zero data-loss incidents during the pilot period
+
+This scope maps directly onto ADR-001's Phase 2 (`Architecture_Decision_Records.md`) — the work packages below sequence MVP and post-MVP work against calendar time and dependency.
+
+### 7.2 Roadmap (Work Packages)
+
+| Work Package | Scope | Dependency | Target Window | Exit Criteria |
+|---|---|---|---|---|
+| **WP1 — Platform Foundation** | API Gateway, shared Kafka/PostgreSQL/Redis clusters, OpenShift namespace | ADR-003 (private cloud provisioning) | Q1 | Gateway routes to a stub service; infrastructure passes a smoke test (= ADR-001 Phase 1) |
+| **WP2 — MVP: Core Service Desk** | Service Desk Management + Knowledge Management, cut over for a pilot group | WP1 | Q1–Q2 | MVP exit criteria in Section 7.1 met (= ADR-001 Phase 2) |
+| **WP3 — Full Rollout** | Change, Problem, Release, Administrative Access, Post-Implementation Review, Asset & Configuration services | WP2 | Q2–Q3 | All 8 services live; vendor platform reduced to read-only fallback (= ADR-001 Phase 3) |
+| **WP4 — Vendor Decommission & DR Validation** | Vendor contract termination; disaster recovery drill against RTO/RPO targets (QD10) | WP3 | Q3–Q4 | 30 consecutive days on the new platform; DR drill passes (= ADR-001 Phase 4, ADR-003 Phase 4) |
+| **WP5 — Governance Close-Out** | Architecture Contract and compliance assessment (TOGAF Phase G) | WP4 | Q4 | ARB sign-off recorded for ADR-001/002/003; delivered-vs-designed gap assessed |
+
+### 7.3 What This Roadmap Does Not Cover
+
+Named honestly, in keeping with Section 6.4:
+
+- **Sprint-level backlog** — owned by delivery teams once WP2 begins; not an enterprise-architecture-level artifact.
+- **Cost/budget breakdown per work package** — not yet produced; tracked as the same open gap behind the platform's unbacked cost-reduction estimate (EA_Contribution_Report.md, Business Value).
+- **Staffing ramp plan by role and quarter** — Section 3 (via ADR-002) names the required skills but doesn't sequence hiring against this roadmap. Worth closing alongside the budget breakdown above, since both feed the same planning conversation.
+
+---
+
+## 8. Appendix
 
 ### Glossary
 - **API Gateway:** Entry point for all external and internal API requests to the microservices.
