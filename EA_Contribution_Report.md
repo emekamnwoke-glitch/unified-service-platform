@@ -274,7 +274,7 @@ Documented:
 
 | Dimension | Before (Vendor Platform) | After (Proposed Architecture) | Value |
 |---|---|---|---|
-| **Operational Cost** | Vendor licensing subject to FX fluctuation | Internal capex model with predictable scaling | Cost certainty, 40-60% reduction (estimated) |
+| **Operational Cost** | Vendor licensing subject to FX fluctuation | Internal capex model with predictable scaling | Cost certainty, 33-50% reduction depending on FX scenario (see SDD §8) |
 | **Scalability** | Limited to vendor's infrastructure | Unlimited horizontal scaling in private cloud | 10x capacity growth capability |
 | **Flexibility** | Vendor-constrained features | Fully configurable (workflows, fields, SLAs) | Customization without vendor dependencies |
 | **Data Control** | Vendor-hosted (cloud/NDPR risk) | Internal hosting with strict NDPR compliance | Data sovereignty, reduced audit risk |
@@ -337,7 +337,7 @@ Documented:
 
 ### Secondary Artifacts
 - Technology stack risk assessment
-- Budget impact analysis
+- **Budget impact analysis** — illustrative 3-year TCO model comparing vendor licensing (3 FX scenarios) against internal build/run cost, with assumptions, breakeven point, and a reconciliation of the reported cost-reduction figure against the model's own output: see SDD §8 ([`SDD_Anonymized_Portfolio.md`](SDD_Anonymized_Portfolio.md))
 - Skill/staffing requirements
 - **Implementation roadmap (MVP scope definition)** — 5 work packages sequencing MVP and full rollout against dependency and target quarter, plus an explicit MVP exit criteria and scope cut: see SDD §7 ([`SDD_Anonymized_Portfolio.md`](SDD_Anonymized_Portfolio.md))
 
@@ -385,7 +385,7 @@ As the Enterprise Architect on the Unified Service Management Platform, I led th
 
 **Key Success Metrics:**
 - ✓ Scalability: 10x growth capacity (vs. vendor ceiling)
-- ✓ Cost: Estimated 40-60% reduction through eliminating FX-exposed licensing
+- ✓ Cost: 33-50% reduction over 3 years, wider under currency depreciation (modeled in SDD §8)
 - ✓ Flexibility: Fully configurable, vendor-independent
 - ✓ Compliance: On-premise hosting, strict audit trails, GDPR-ready
 - ✓ Delivery: Production-ready SDD, clear implementation roadmap

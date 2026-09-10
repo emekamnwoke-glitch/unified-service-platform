@@ -20,7 +20,7 @@ An organization needed to replace a vendor-dependent IT service desk solution th
 ### The Architectural Solution
 Design a microservices-based, cloud-native IT service management platform deployed on private infrastructure that provides:
 - **10x scalability capacity** with independent service scaling
-- **40-60% cost reduction** through eliminating FX-exposed licensing
+- **33-50% cost reduction** (illustrative model, wider under currency depreciation) through eliminating FX-exposed licensing
 - **Full configurability** without vendor dependency
 - **Strict data residency compliance** via on-premise deployment
 
@@ -184,7 +184,7 @@ Each persona has documented motivations, concerns, expected benefits, and portal
 ### For Hiring Managers
 1. **Start with:** EA_Contribution_Report.md (sections: Executive Summary, Business Value Delivered, TOGAF ADM Alignment)
 2. **Focus on:** Decision-making rationale, stakeholder alignment, business impact
-3. **Key metrics:** 10x scalability, 40-60% cost reduction, compliance achievement, microservices decomposition
+3. **Key metrics:** 10x scalability, 33-50% cost reduction (illustrative model, SDD §8), compliance achievement, microservices decomposition
 
 ### For Enterprise Architects
 1. **Start with:** EA_Contribution_Report.md → SDD_Anonymized_Portfolio.md
@@ -287,7 +287,7 @@ Each persona has documented motivations, concerns, expected benefits, and portal
 | Metric | Target | Status |
 |---|---|---|
 | **Scalability** | 10x growth capacity | ✓ Achieved in design |
-| **Cost Reduction** | 40-60% vs. vendor | ✓ Modeled in deployment strategy |
+| **Cost Reduction** | 33-50% vs. vendor, FX-scenario dependent | ✓ Modeled in SDD §8 |
 | **Compliance** | NDPR, on-premise | ✓ Integrated in architecture |
 | **Availability** | 99.9% uptime | ✓ Designed into infrastructure |
 | **Performance** | 200ms response time, 1000 req/sec | ✓ Tech stack supports targets |

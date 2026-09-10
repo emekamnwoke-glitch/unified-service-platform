@@ -16,7 +16,8 @@
 5. Architecture Models
 6. Architecture Model Refinements
 7. Implementation Roadmap and MVP Scope
-8. Appendix
+8. Budget Impact Analysis (Illustrative Model)
+9. Appendix
 
 ---
 
@@ -610,12 +611,67 @@ This scope maps directly onto ADR-001's Phase 2 (`Architecture_Decision_Records.
 Named honestly, in keeping with Section 6.4:
 
 - **Sprint-level backlog** — owned by delivery teams once WP2 begins; not an enterprise-architecture-level artifact.
-- **Cost/budget breakdown per work package** — not yet produced; tracked as the same open gap behind the platform's unbacked cost-reduction estimate (EA_Contribution_Report.md, Business Value).
-- **Staffing ramp plan by role and quarter** — Section 3 (via ADR-002) names the required skills but doesn't sequence hiring against this roadmap. Worth closing alongside the budget breakdown above, since both feed the same planning conversation.
+- **Cost/budget breakdown per work package** — a 3-year total is now modeled in Section 8, but it isn't yet broken out per work package above; a useful follow-up, not a blocker to this roadmap.
+- **Staffing ramp plan by role and quarter** — Section 3 (via ADR-002) names the required skills, and Section 8 assumes a headcount profile, but neither sequences hiring by role against this roadmap's quarters. Worth closing next.
 
 ---
 
-## 8. Appendix
+## 8. Budget Impact Analysis (Illustrative Model)
+
+**This section is a theoretical model, not the client's actual confidential figures.** It exists to show the methodology behind the cost-reduction claim made elsewhere in this portfolio (EA_Contribution_Report.md, Business Value), using illustrative assumptions rather than real contract or payroll data.
+
+### 8.1 Assumptions
+
+| Assumption | Value | Basis |
+|---|---|---|
+| Licensed agent seats | 500 | Illustrative headcount for a mid-market enterprise client (Section 1) |
+| Vendor per-seat cost | $89/agent/month | Illustrative rate within the published mid-tier pricing band of well-known international service-desk platforms |
+| Vendor contract currency | USD | Matches the FX-exposure pain point behind the Cost Optimization business driver (Section 2A) |
+| Internal engineering cost | $70,000/FTE/year, fully loaded | Illustrative blended rate |
+| MVP build team | 10 FTEs (skillset per ADR-002: .NET, Node.js, PostgreSQL, Kafka, Kubernetes), 9 months | Matches WP1–WP2 (Section 7.2) |
+| Steady-state platform team | 3 FTEs, post-rollout | Illustrative — smaller ongoing footprint than the build phase |
+| Incremental infrastructure | $40,000/year | Illustrative compute/storage/support share of the already-owned private cloud (ADR-003) |
+| FX scenarios | Stable (0%/yr), Moderate (15%/yr), Severe (30%/yr) local-currency depreciation against the vendor's invoicing currency | Illustrative bands reflecting the volatility named as a risk in Section 2A — not a specific historical or forecast rate |
+
+### 8.2 Three-Year Vendor Cost by FX Scenario
+
+The vendor license is invoiced in USD; the organization's real cost is a local-currency equivalent that moves with FX. Year 1 = $534,000 (500 seats × $89 × 12 months).
+
+| Scenario | Year 1 | Year 2 | Year 3 | 3-Year Total | vs. Stable |
+|---|---|---|---|---|---|
+| Stable FX | $534,000 | $534,000 | $534,000 | $1,602,000 | — |
+| Moderate depreciation (15%/yr) | $534,000 | $614,000 | $706,000 | $1,853,000 | +15.6% |
+| Severe depreciation (30%/yr) | $534,000 | $694,000 | $903,000 | $2,131,000 | +33.0% |
+
+### 8.3 Three-Year Internal Platform Cost
+
+Entirely local-currency-denominated — no FX exposure, by design, since ADR-002 chose an open-source, no-per-seat stack.
+
+| Year | Build/Run Cost | Infrastructure | Total |
+|---|---|---|---|
+| Year 1 (WP1–WP2, build) | $525,000 (10 FTEs × 9 months) | $40,000 | $565,000 |
+| Year 2 (WP3–WP4, rollout + steady state) | $210,000 (3 FTEs) | $40,000 | $250,000 |
+| Year 3 (steady state) | $210,000 (3 FTEs) | $40,000 | $250,000 |
+| **3-Year Total** | | | **$1,065,000** |
+
+### 8.4 Comparison and Breakeven
+
+| Metric | Stable FX | Moderate FX | Severe FX |
+|---|---|---|---|
+| 3-Year Vendor Cost | $1,602,000 | $1,853,000 | $2,131,000 |
+| 3-Year Internal Cost | $1,065,000 | $1,065,000 | $1,065,000 |
+| **Savings** | $537,000 | $788,000 | $1,066,000 |
+| **Reduction** | 33.5% | 42.5% | 50.0% |
+
+**Payback:** the build year costs more than staying on the vendor platform would have — cumulative internal spend at Year 1 ($565,000) exceeds Year 1 vendor spend ($534,000). By the end of Year 2, cumulative internal spend ($815,000) falls below cumulative vendor spend under every FX scenario (Stable: $1,068,000; Moderate: $1,148,000; Severe: $1,228,000). **Payback lands within Year 2 even with no FX movement at all, and earlier under any depreciation scenario.**
+
+### 8.5 What This Means for the Reported Cost-Reduction Figure
+
+The "40–60% reduction" figure cited elsewhere in this portfolio is directionally right but doesn't match this model's own output: this model produces **33.5% to 50%**, depending on the FX scenario — the low end of "40–60%" isn't reached in a stable-FX year, and the high end isn't reached even under severe depreciation. Recommendation: cite the range and its FX dependency ("33–50%, wider under currency depreciation") rather than a flat 40–60% — a claim this model doesn't actually produce, illustrative or not.
+
+---
+
+## 9. Appendix
 
 ### Glossary
 - **API Gateway:** Entry point for all external and internal API requests to the microservices.
